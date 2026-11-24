@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gerenciador de Tarefas
 
-## Getting Started
+Aplicação simples de gerenciamento de tarefas feita com **Next.js 15**, **tRPC** e **React Query**.
 
-First, run the development server:
+As tarefas ficam salvas em memória no servidor, então ao reiniciar o projeto a lista volta vazia.
+
+## Funcionalidades
+
+- Listar tarefas (primeira página carregada via SSR)
+- Infinite scroll para carregar mais tarefas ao rolar a página
+- Criar tarefa
+- Editar tarefa
+- Excluir tarefa direto na listagem, com mensagem de sucesso ou erro
+- Validação do título no formulário e no backend (com Zod)
+- Erro `NOT_FOUND` ao tentar editar ou excluir uma tarefa que não existe
+
+## Tecnologias
+
+- Next.js 15 (App Router)
+- React 19
+- tRPC 11
+- TanStack React Query
+- Zod
+- SuperJSON
+- Vitest
+
+## Como rodar
+
+Pré-requisito: Node.js 18.18 ou superior.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build de produção
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+### Testes
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm test
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Estrutura
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+  app/
+    page.tsx                    listagem de tarefas (SSR)
+    tarefas/nova/page.tsx       criação de tarefa
+    tarefas/[id]/editar/page.tsx edição de tarefa
+    api/trpc/[trpc]/route.ts    endpoint do tRPC
+  components/
+    ListaTarefas.tsx            lista com infinite scroll e exclusão
+    FormTarefa.tsx              formulário de criar/editar
+  server/
+    trpc.ts                     configuração do tRPC
+    store.ts                    lista de tarefas em memória
+    caller.ts                   chama o tRPC direto no servidor (SSR)
+    routers/tarefa.ts           endpoints: listar, buscarPorId, criar, atualizar, deletar
+  trpc/
+    client.tsx                  cliente tRPC + React Query
+```
 
-## Deploy on Vercel
+## Modelo da tarefa
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Campo        | Tipo   | Obrigatório |
+| ------------ | ------ | ----------- |
+| id           | string | gerado automaticamente |
+| titulo       | string | sim |
+| descricao    | string | não |
+| dataCriacao  | Date   | gerado automaticamente |
